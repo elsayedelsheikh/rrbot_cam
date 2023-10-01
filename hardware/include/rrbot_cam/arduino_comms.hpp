@@ -7,6 +7,7 @@
 #include <libserial/SerialPort.h>
 
 #include <iostream>
+#include <cmath>
 
 namespace arduino_comms {
 
@@ -78,7 +79,7 @@ class ArduinoComms {
 
   void send_empty_msg() { std::string response = send_msg("\r"); }
 
-  void read_servos_position(int &val_1, int &val_2) {
+  void read_servos_position(double &val_1, double &val_2) {
     std::string response = send_msg("t\r");
 
     std::string delimiter = " ";
@@ -86,11 +87,22 @@ class ArduinoComms {
     std::string token_1 = response.substr(0, del_pos);
     std::string token_2 = response.substr(del_pos + delimiter.length());
 
-    val_1 = std::atoi(token_1.c_str());
-    val_2 = std::atoi(token_2.c_str());
+    // Get the angles in degrees
+    int angle_in_degrees_1, angle_in_degrees_2;
+    angle_in_degrees_1 = std::atoi(token_1.c_str());
+    angle_in_degrees_2 = std::atoi(token_2.c_str());
+
+    // Convert to radians
+    val_1 = angle_in_degrees_1 * M_PI / 180.0;
+    val_2 = angle_in_degrees_2 * M_PI / 180.0;
   }
 
-  void set_servos_position(int pan_angle, int tilt_angle) {
+  void set_servos_position(double pan_angle_radians, double tilt_angle_radians) {
+    // Convert to degrees
+    int pan_angle = pan_angle_radians * 180.0 / M_PI;
+    int tilt_angle = tilt_angle_radians * 180.0 / M_PI;
+
+    // Send the command
     std::stringstream ss;
     ss << "s " << pan_angle << " " << tilt_angle << "\r";
     send_msg(ss.str());

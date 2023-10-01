@@ -13,15 +13,15 @@
 
       <joint name="${prefix}joint1">
         <command_interface name="position">
-          <param name="min">-1</param>
-          <param name="max">1</param>
+          <param name="min">0.0</param>
+          <param name="max">${pi}</param>
         </command_interface>
         <state_interface name="position"/>
       </joint>
       <joint name="${prefix}joint2">
         <command_interface name="position">
-          <param name="min">-1</param>
-          <param name="max">1</param>
+          <param name="min">${radians(10)}</param>
+          <param name="max">${radians(90)}</param>
         </command_interface>
         <state_interface name="position"/>
       </joint>

@@ -94,8 +94,9 @@ RRBotSystemPositionOnlyHardware::on_configure(
   arduino_comms_.reset_servos_position();
 
   // reset values always when configuring hardware
-  hw_states_ = {0.0, 0.0};  
-  hw_commands_ = {0.0, 0.0};
+  // Initial values are 90 degrees for pan and 60 degrees for tilt
+  hw_states_ = {90.0 * M_PI /180, 60.0 * M_PI /180};
+  hw_commands_ = {90.0 * M_PI /180, 60.0 * M_PI /180}; 
 
   RCLCPP_INFO(rclcpp::get_logger("RRBotSystemPositionOnlyHardware"),
               "Successfully configured!");
@@ -162,11 +163,11 @@ RRBotSystemPositionOnlyHardware::on_deactivate(
 
 hardware_interface::return_type RRBotSystemPositionOnlyHardware::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  int pan_angle, tilt_angle;
+  double pan_angle, tilt_angle;
   arduino_comms_.read_servos_position(pan_angle, tilt_angle);
 
-  hw_states_[0] = pan_angle * M_PI / 180;
-  hw_states_[1] = tilt_angle* M_PI / 180;
+  hw_states_[0] = pan_angle ;
+  hw_states_[1] = tilt_angle;
 
   return hardware_interface::return_type::OK;
 }
