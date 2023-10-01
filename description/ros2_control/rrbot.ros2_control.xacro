@@ -6,9 +6,9 @@
     <ros2_control name="${name}" type="system">
       <hardware>
         <plugin>rrbot_cam/RRBotSystemPositionOnlyHardware</plugin>
-        <param name="example_param_hw_start_duration_sec">0</param>
-        <param name="example_param_hw_stop_duration_sec">3.0</param>
-        <param name="example_param_hw_slowdown">100</param>
+        <param name="serial_device_port">/dev/ttyUSB0</param>
+        <param name="communication_baud_rate">57600</param>
+        <param name="communication_timeout_ms">1000</param>
       </hardware>
 
       <joint name="${prefix}joint1">

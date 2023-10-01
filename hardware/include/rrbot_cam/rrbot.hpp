@@ -26,7 +26,9 @@
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
+
 #include "rrbot_cam/visibility_control.h"
+#include "rrbot_cam/arduino_comms.hpp"
 
 namespace rrbot_cam
 {
@@ -66,10 +68,11 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
-  // Parameters for the RRBot simulation
-  double hw_start_sec_;
-  double hw_stop_sec_;
-  double hw_slowdown_;
+  // Parameters for the RRBot Arduino communication
+  arduino_comms::ArduinoComms arduino_comms_;
+  std::string serial_device_;
+  int32_t baud_rate_;
+  int32_t timeout_ms_;
 
   // Store the command for the simulated robot
   std::vector<double> hw_commands_;
