@@ -24,19 +24,6 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    # Declare arguments
-    declared_arguments = []
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "gui",
-            default_value="true",
-            description="Start RViz2 automatically with this launch file.",
-        )
-    )
-
-    # Initialize Arguments
-    gui = LaunchConfiguration("gui")
-
     # Get URDF via xacro
     robot_description_content = Command(
         [
@@ -60,9 +47,6 @@ def generate_launch_description():
             "rrbot_controllers.yaml",
         ]
     )
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("rrbot_cam"), "rviz", "rrbot.rviz"]
-    )
 
     control_node = Node(
         package="controller_manager",
@@ -75,14 +59,6 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
-    )
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        condition=IfCondition(gui),
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -97,13 +73,6 @@ def generate_launch_description():
         arguments=["forward_position_controller", "--controller-manager", "/controller_manager"],
     )
 
-    # Delay rviz start after `joint_state_broadcaster`
-    delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=joint_state_broadcaster_spawner,
-            on_exit=[rviz_node],
-        )
-    )
 
     # Delay start of robot_controller after `joint_state_broadcaster`
     delay_robot_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
@@ -117,8 +86,7 @@ def generate_launch_description():
         control_node,
         robot_state_pub_node,
         joint_state_broadcaster_spawner,
-        delay_rviz_after_joint_state_broadcaster_spawner,
         delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
 
-    return LaunchDescription(declared_arguments + nodes)
+    return LaunchDescription(nodes)
